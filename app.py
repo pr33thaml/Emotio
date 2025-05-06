@@ -33,7 +33,9 @@ if not all([GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, OPENROUTER_API_KEY]):
     raise EnvironmentError("Missing one of: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, OPENROUTER_API_KEY")
 
 # Initialize app
-app = Flask(__name__)
+app = Flask(__name__, 
+    template_folder='app/templates',
+    static_folder='app/static')
 app.secret_key = os.getenv('SECRET_KEY')
 CORS(app)
 
