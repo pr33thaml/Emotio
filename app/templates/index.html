@@ -7,33 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .main-container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .welcome-text {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .feature-card {
-            margin-bottom: 20px;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-        }
-    </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<body class="dark-theme">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="/">Emotio</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -42,74 +18,112 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/journal">Journal</a>
+                        <a class="nav-link" href="/journal"><i class="fas fa-book-open"></i> Journal</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/insights">Insights</a>
+                        <a class="nav-link" href="/insights"><i class="fas fa-chart-line"></i> Insights</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/chat">AI Support</a>
+                        <a class="nav-link" href="/chat"><i class="fas fa-robot"></i> AI Support</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/professionals">Professionals</a>
+                        <a class="nav-link" href="/professionals"><i class="fas fa-user-md"></i> Professionals</a>
                     </li>
                 </ul>
                 <div class="navbar-nav">
                     {% if current_user.is_authenticated %}
-                        <a class="nav-link" href="/profile">Profile</a>
-                        <a class="nav-link" href="/logout">Logout</a>
+                        <a class="nav-link" href="/profile"><i class="fas fa-user"></i> Profile</a>
+                        <a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
                     {% else %}
-                        <a class="nav-link" href="/login">Login</a>
-                        <a class="nav-link" href="/signup">Sign Up</a>
+                        <a class="nav-link" href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+                        <a class="nav-link" href="/signup"><i class="fas fa-user-plus"></i> Sign Up</a>
                     {% endif %}
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2 text-center">
-                <h1 class="display-4 mb-4">Welcome to Emotio</h1>
-                <p class="lead mb-5">Your personal emotional support companion, powered by AI</p>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-3">
-                <div class="feature-card">
-                    <i class="fas fa-book-open fa-3x mb-3"></i>
-                    <h3>Journal</h3>
-                    <p>Express your thoughts and feelings in a safe space</p>
-                    <a href="/journal" class="btn btn-primary">Start Journaling</a>
+    <div class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="display-3 mb-4">Your Emotional Support Companion</h1>
+                    <p class="lead mb-5">Track your mood, get AI-powered support, and connect with professionals - all in one place.</p>
+                    <div class="cta-buttons">
+                        <a href="/signup" class="btn btn-primary btn-lg me-3">Get Started</a>
+                        <a href="/login" class="btn btn-outline-light btn-lg">Sign In</a>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="feature-card">
-                    <i class="fas fa-chart-line fa-3x mb-3"></i>
-                    <h3>Insights</h3>
-                    <p>Track your mood and emotional patterns</p>
-                    <a href="/insights" class="btn btn-primary">View Insights</a>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="feature-card">
-                    <i class="fas fa-robot fa-3x mb-3"></i>
-                    <h3>AI Support</h3>
-                    <p>Get immediate emotional support from our AI</p>
-                    <a href="/chat" class="btn btn-primary">Chat Now</a>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="feature-card">
-                    <i class="fas fa-user-md fa-3x mb-3"></i>
-                    <h3>Professionals</h3>
-                    <p>Connect with mental health professionals</p>
-                    <a href="/professionals" class="btn btn-primary">Find Help</a>
+                <div class="col-md-6">
+                    <div class="hero-image">
+                        <img src="{{ url_for('static', filename='images/hero-illustration.svg') }}" alt="Emotional Support" class="img-fluid">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="features-section">
+        <div class="container">
+            <h2 class="text-center mb-5">How Emotio Helps You</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3>Journal</h3>
+                        <p>Express your thoughts and feelings in a safe, private space</p>
+                        <a href="/journal" class="btn btn-outline-primary">Start Journaling</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Insights</h3>
+                        <p>Track your mood patterns and emotional journey</p>
+                        <a href="/insights" class="btn btn-outline-primary">View Insights</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3>AI Support</h3>
+                        <p>Get immediate emotional support from our AI companion</p>
+                        <a href="/chat" class="btn btn-outline-primary">Chat Now</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h3>Professionals</h3>
+                        <p>Connect with qualified mental health professionals</p>
+                        <a href="/professionals" class="btn btn-outline-primary">Find Help</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Emotio</h4>
+                    <p>Your emotional support companion, powered by AI</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p>&copy; 2024 Emotio. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
