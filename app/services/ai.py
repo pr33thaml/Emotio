@@ -1,10 +1,10 @@
-from openai import OpenAI
+import openai
 import os
 from datetime import datetime
 
 class AIService:
     def __init__(self):
-        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        openai.api_key = os.getenv('OPENAI_API_KEY')
         self.model = "gpt-3.5-turbo"
         
     def get_chat_response(self, message, mood=None):
@@ -16,7 +16,7 @@ class AIService:
         User message: {message}
         """
         
-        response = self.client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model=self.model,
             messages=[
                 {"role": "system", "content": "You are a supportive and empathetic AI assistant."},
@@ -41,7 +41,7 @@ class AIService:
             
         messages.append({"role": "user", "content": message})
         
-        response = self.client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model=self.model,
             messages=messages,
             temperature=0.7,
@@ -64,7 +64,7 @@ class AIService:
         {session_messages}
         """
         
-        response = self.client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model=self.model,
             messages=[
                 {"role": "system", "content": "You are a professional counselor summarizing a therapy session."},
@@ -123,7 +123,7 @@ class AIService:
         4. Positive aspects to celebrate
         """
         
-        response = self.client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model=self.model,
             messages=[
                 {"role": "system", "content": "You are an emotional analysis AI providing insights on journal entries."},
