@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Your Emotional Insights</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Mood Trends</h5>
+                    <canvas id="moodChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Common Emotions</h5>
+                    <canvas id="emotionsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Recommendations</h5>
+                    <ul class="list-group list-group-flush">
+                        {% for recommendation in recommendations %}
+                        <li class="list-group-item">
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            {{ recommendation }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Mood Trends Chart
+const moodCtx = document.getElementById('moodChart').getContext('2d');
+new Chart(moodCtx, {
+    type: 'line',
+    data: {
+        labels: {{ mood_trends.labels | tojson }},
+        datasets: [{
+            label: 'Mood Score',
+            data: {{ mood_trends.data | tojson }},
+            borderColor: '#4a90e2',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Emotions Chart
+const emotionsCtx = document.getElementById('emotionsChart').getContext('2d');
+new Chart(emotionsCtx, {
+    type: 'doughnut',
+    data: {
+        labels: {{ common_emotions.labels | tojson }},
+        datasets: [{
+            data: {{ common_emotions.data | tojson }},
+            backgroundColor: [
+                '#4a90e2',
+                '#50c878',
+                '#f5a623',
+                '#d0021b',
+                '#9013fe'
+            ]
+        }]
+    },
+    options: {
+        responsive: true
+    }
+});
+</script>
+{% endblock %} 

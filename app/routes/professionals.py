@@ -1,17 +1,19 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required
+from app.models.professional import Professional
 
 bp = Blueprint('professionals', __name__)
 
-@bp.route('/list')
+@bp.route('/professionals')
 @login_required
-def get_professionals():
-    # This would typically come from a database
-    professionals = [
-        {
-            'name': 'Dr. Jane Smith',
-            'specialty': 'Clinical Psychologist',
-            'contact': 'contact@example.com'
-        }
-    ]
-    return jsonify(professionals) 
+def list_professionals():
+    professionals = Professional.get_all()
+    return render_template('professionals.html', professionals=professionals)
+
+@bp.route('/professionals/<professional_id>')
+@login_required
+def view_professional(professional_id):
+    professional = Professional.get_by_id(professional_id)
+    if professional:
+        return render_template('professional_detail.html', professional=professional)
+    return redirect(url_for('professionals.list_professionals')) 

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Mental Health Professionals</h1>
+            <p class="lead">Connect with qualified professionals who can help you on your journey to better mental health.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for professional in professionals %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ professional.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ professional.specialization }}</h6>
+                    <p class="card-text">{{ professional.bio }}</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-graduation-cap me-2"></i>{{ professional.qualifications }}</li>
+                        <li><i class="fas fa-clock me-2"></i>{{ professional.availability }}</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i>{{ professional.location }}</li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('professionals.view_professional', professional_id=professional.id) }}" 
+                       class="btn btn-primary">View Profile</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

@@ -5,10 +5,12 @@ from datetime import datetime
 
 from app.services.ai import AIService
 from app.services.emotion import EmotionService
+from app.services.chat import ChatService
 
 bp = Blueprint('chat', __name__, url_prefix='/chat')
 ai_service = AIService()
 emotion_service = EmotionService()
+chat_service = ChatService()
 
 @bp.route('/', methods=['GET', 'POST'])
 @login_required
@@ -86,4 +88,16 @@ def get_current_mood():
         })
     except Exception as e:
         print(f"Error getting mood: {str(e)}")
-        return jsonify({'status': 'error', 'message': str(e)}), 500 
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@bp.route('/chat/message', methods=['POST'])
+@login_required
+def send_message():
+    data = request.get_json()
+    message = data.get('message')
+    
+    if message:
+        response = chat_service.get_response(message, current_user.id)
+        return jsonify({'response': response})
+    
+    return jsonify({'error': 'No message provided'}), 400 
