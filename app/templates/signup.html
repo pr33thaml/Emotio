@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Emotio - Login</title>
+  <title>Emotio - Sign Up</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -226,102 +226,6 @@
       pointer-events: none;
       animation: float 3s ease-in-out infinite;
     }
-
-    /* Welcome Overlay */
-    .welcome-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .welcome-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-    .welcome-card {
-      background: rgba(17, 17, 17, 0.9);
-      border: 1px solid rgba(139, 92, 246, 0.3);
-      border-radius: 1rem;
-      padding: 2rem;
-      text-align: center;
-      transform: scale(0.8);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
-    .welcome-overlay.active .welcome-card {
-      transform: scale(1);
-    }
-    .welcome-card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
-      animation: rotate 10s linear infinite;
-    }
-    .welcome-emoji {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      display: inline-block;
-      animation: wave 1s ease-in-out;
-    }
-    .welcome-text {
-      font-size: 2rem;
-      font-weight: bold;
-      background: linear-gradient(45deg, #8B5CF6, #EC4899);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 1rem;
-    }
-    .welcome-subtext {
-      color: #9CA3AF;
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
-    }
-    .welcome-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: transparent;
-      border: none;
-      color: #9CA3AF;
-      font-size: 1.5rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      width: 2rem;
-      height: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-    }
-    .welcome-close:hover {
-      color: #8B5CF6;
-      background: rgba(139, 92, 246, 0.1);
-      transform: rotate(90deg);
-    }
-    @keyframes wave {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(-20deg); }
-      75% { transform: rotate(20deg); }
-    }
-    @keyframes rotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
   </style>
 </head>
 <body>
@@ -337,7 +241,7 @@
       </div>
 
       <div class="glass-card p-8 rounded-lg shadow-xl">
-        <h2 class="text-2xl font-semibold mb-8 text-center">Welcome Back! 👋</h2>
+        <h2 class="text-2xl font-semibold mb-8 text-center">Create Account ✨</h2>
 
         {% if error %}
         <div class="bg-red-900 text-red-200 p-4 rounded-lg mb-6 text-sm">
@@ -354,6 +258,13 @@
           </div>
 
           <div class="form-group">
+            <input type="email" name="email" required placeholder=" "
+                   class="form-input">
+            <label class="form-label">Email</label>
+            <i class="fas fa-envelope form-icon"></i>
+          </div>
+
+          <div class="form-group">
             <input type="password" name="password" required placeholder=" "
                    class="form-input">
             <label class="form-label">Password</label>
@@ -361,9 +272,8 @@
           </div>
 
           <button type="submit" class="button-animated group relative">
-            <span class="anim-bar"></span>
-            <i class="fas fa-sign-in-alt mr-2"></i>
-            Login
+            <i class="fas fa-user-plus mr-2"></i>
+            Sign Up
           </button>
         </form>
 
@@ -390,25 +300,12 @@
         </div>
 
         <p class="mt-8 text-center text-gray-400">
-          Don't have an account?
-          <a href="{{ url_for('signup') }}" class="violet-accent hover:text-violet-400">Sign up</a>
+          Already have an account?
+          <a href="{{ url_for('login') }}" class="violet-accent hover:text-violet-400">Login</a>
         </p>
       </div>
     </div>
   </div>
-
-  <!-- Welcome Overlay -->
-  <div class="welcome-overlay" id="welcomeOverlay">
-    <div class="welcome-card">
-      <button class="welcome-close" onclick="closeWelcome()">
-        <i class="fas fa-times"></i>
-      </button>
-      <div class="welcome-emoji">👋</div>
-      <div class="welcome-text">Welcome back, <span id="welcomeUsername"></span>!</div>
-      <div class="welcome-subtext">Ready to continue your emotional journey?</div>
-    </div>
-  </div>
-
   <script src="{{ url_for('static', filename='js/background3d.js') }}"></script>
   <script>
     function createLogoExplosion() {
@@ -468,31 +365,6 @@
       }
     `;
     document.head.appendChild(style);
-
-    // Welcome overlay functionality
-    function showWelcome(username) {
-      const overlay = document.getElementById('welcomeOverlay');
-      const usernameSpan = document.getElementById('welcomeUsername');
-      usernameSpan.textContent = username;
-      overlay.classList.add('active');
-      
-      // Close on click outside
-      overlay.addEventListener('click', function(e) {
-        if (e.target === overlay) {
-          closeWelcome();
-        }
-      });
-    }
-
-    function closeWelcome() {
-      const overlay = document.getElementById('welcomeOverlay');
-      overlay.classList.remove('active');
-    }
-
-    // Check if we should show welcome message
-    {% if session.get('username') %}
-      showWelcome('{{ session.get("username") }}');
-    {% endif %}
   </script>
 </body>
 </html>

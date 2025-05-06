@@ -1,37 +1,1078 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emotio 😌 - Journal</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+    }
 
-{% block content %}
-<div class="container">
-    <div class="row mb-4">
-        <div class="col">
-            <h1>My Journal</h1>
-            <a href="{{ url_for('journal.new_entry') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> New Entry
-            </a>
-        </div>
-    </div>
+    .card {
+      background: rgba(26, 26, 46, 0.6);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+      transition: all 0.3s ease;
+    }
 
-    <div class="row">
-        <div class="col">
-            {% if entries %}
-                {% for entry in entries %}
-                <div class="journal-entry">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="date">{{ entry.timestamp.strftime('%B %d, %Y') }}</span>
-                        <span class="mood">{{ entry.emotion }}</span>
-                    </div>
-                    <p>{{ entry.content }}</p>
-                    <a href="{{ url_for('journal.view_entry', entry_id=entry.id) }}" class="btn btn-sm btn-outline-primary">
-                        View Details
-                    </a>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="alert alert-info">
-                    No journal entries yet. Start writing your first entry!
-                </div>
-            {% endif %}
-        </div>
+    .card:hover {
+      transform: translateZ(10px);
+      box-shadow: 0 8px 30px rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .card h2 {
+      background: linear-gradient(45deg, #8B5CF6, #EC4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transform: translateZ(15px);
+      text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .header {
+      background: rgba(26, 26, 46, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    .header h1 {
+      background: linear-gradient(45deg, #8B5CF6, #EC4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transform: translateZ(15px);
+      text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 2rem;
+    }
+
+    .header h1 span {
+      font-size: 2rem;
+      animation: wave 2s infinite;
+      display: inline-block;
+      transform-origin: 70% 70%;
+      -webkit-text-fill-color: initial;
+      background: none;
+      text-shadow: none;
+    }
+
+    .nav-link {
+      color: #fff;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+    }
+
+    .nav-link:hover {
+      opacity: 1;
+      background: rgba(139, 92, 246, 0.2);
+      transform: translateZ(10px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    }
+
+    .nav-link.active {
+      opacity: 1;
+      background: rgba(139, 92, 246, 0.3);
+      transform: translateZ(20px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+      border-color: rgba(139, 92, 246, 0.5);
+    }
+
+    .nav-link i {
+      margin-right: 0.5rem;
+      font-size: 1.1rem;
+      transform: translateZ(5px);
+    }
+
+    .logout-btn {
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      color: white;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+    }
+
+    .logout-btn:hover {
+      background: rgba(139, 92, 246, 0.3);
+      transform: translateZ(10px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    }
+
+    .logout-btn i {
+      margin-right: 0.5rem;
+      transform: translateZ(5px);
+    }
+
+    .mood-option {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1.5rem;
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+      backdrop-filter: blur(5px);
+    }
+
+    .mood-option:hover {
+      transform: translateZ(10px) scale(1.1) rotate(5deg);
+      background: rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.3);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    }
+
+    .mood-option.selected {
+      background: rgba(139, 92, 246, 0.3);
+      border-color: rgba(139, 92, 246, 0.5);
+      transform: translateZ(15px) scale(1.1);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+    }
+
+    button {
+      transform-style: preserve-3d;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .bg-violet-600 {
+      background: linear-gradient(45deg, #8B5CF6, #7C3AED);
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    }
+
+    .bg-violet-600:hover {
+      background: linear-gradient(45deg, #7C3AED, #6D28D9);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .bg-red-600 {
+      background: linear-gradient(45deg, #DC2626, #B91C1C);
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+    }
+
+    .bg-red-600:hover {
+      background: linear-gradient(45deg, #B91C1C, #991B1B);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-20deg); }
+      75% { transform: rotate(20deg); }
+    }
+
+    .entry {
+      background: rgba(45, 45, 45, 0.5);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    .entry:hover {
+      transform: translateZ(10px);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.15);
+      border-color: rgba(139, 92, 246, 0.2);
+    }
+
+    .entry.selected {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.4);
+      transform: translateZ(15px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.25);
+    }
+
+    .entry-date {
+      color: #8b5cf6;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      transform: translateZ(5px);
+      text-shadow: 0 2px 5px rgba(139, 92, 246, 0.2);
+    }
+
+    .entry-mood {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+      transform: translateZ(5px);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .entry-content {
+      color: #e2e8f0;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      transform: translateZ(5px);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .entry-actions {
+      opacity: 0;
+      transition: all 0.3s ease;
+      transform: translateZ(10px);
+    }
+
+    .entry:hover .entry-actions {
+      opacity: 1;
+      transform: translateZ(15px);
+    }
+
+    .entry-actions button {
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 0.5rem;
+      border-radius: 8px;
+      color: white;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+    }
+
+    .entry-actions button:hover {
+      background: rgba(139, 92, 246, 0.3);
+      transform: translateZ(5px) scale(1.1);
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+    }
+
+    .entry-actions button.delete {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .entry-actions button.delete:hover {
+      background: rgba(239, 68, 68, 0.3);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+    }
+
+    textarea {
+      background: rgba(26, 26, 46, 0.8) !important;
+      border: 1px solid rgba(139, 92, 246, 0.2) !important;
+      border-radius: 12px !important;
+      padding: 1rem !important;
+      color: white !important;
+      transition: all 0.3s ease !important;
+      transform-style: preserve-3d !important;
+      transform: translateZ(0) !important;
+      backdrop-filter: blur(5px) !important;
+    }
+
+    textarea:focus {
+      border-color: rgba(139, 92, 246, 0.4) !important;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2) !important;
+      transform: translateZ(5px) !important;
+      outline: none !important;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateZ(5px) translateY(0); }
+      50% { transform: translateZ(5px) translateY(-5px); }
+    }
+
+    .bulk-actions {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      gap: 1rem;
+      background: rgba(26, 26, 46, 0.9);
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      transform-style: preserve-3d;
+      transform: translateZ(20px);
+    }
+
+    .bulk-actions button {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .bulk-actions button i {
+      transform: translateZ(5px);
+    }
+
+    .report-section {
+      background: rgba(26, 26, 46, 0.6);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .report-section h3 {
+      color: #8b5cf6;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+      padding-bottom: 0.75rem;
+    }
+
+    .report-section ul {
+      list-style-type: none;
+      padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .report-section li {
+      position: relative;
+      margin-bottom: 1rem;
+      padding-left: 1.5rem;
+      line-height: 1.8;
+      font-size: 1.1rem;
+      color: #e2e8f0;
+    }
+
+    .report-section li::before {
+      content: '•';
+      color: #8b5cf6;
+      position: absolute;
+      left: 0;
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .report-section p {
+      margin-bottom: 1rem;
+      line-height: 1.8;
+      font-size: 1.1rem;
+      color: #e2e8f0;
+    }
+
+    .report-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      padding: 0.75rem;
+      background: rgba(139, 92, 246, 0.1);
+      border-radius: 8px;
+      border-left: 3px solid #8b5cf6;
+    }
+
+    .report-stat i {
+      color: #8b5cf6;
+      width: 1.5rem;
+      text-align: center;
+    }
+
+    /* Loading dots animation */
+    .loading-dots {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .loading-dots span {
+      width: 0.75rem;
+      height: 0.75rem;
+      background: rgba(139, 92, 246, 0.5);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+
+    .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes bounce {
+      0%, 100% { transform: scale(0); }
+      50% { transform: scale(1); }
+    }
+
+    /* Custom scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.5);
+      border-radius: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 0.7);
+    }
+
+    .save-entry-btn {
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      color: white;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+      backdrop-filter: blur(5px);
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .save-entry-btn:hover {
+      background: rgba(139, 92, 246, 0.3);
+      transform: translateZ(10px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    }
+
+    .save-entry-btn i {
+      transform: translateZ(5px);
+    }
+
+    .action-btn {
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      color: white;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .action-btn:hover {
+      background: rgba(139, 92, 246, 0.3);
+      transform: translateZ(10px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    }
+
+    .action-btn i {
+      transform: translateZ(5px);
+    }
+
+    .action-btn.delete {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .action-btn.delete:hover {
+      background: rgba(239, 68, 68, 0.3);
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
+    }
+
+    .download-btn {
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      color: white;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .download-btn:hover {
+      background: rgba(139, 92, 246, 0.3);
+      transform: translateZ(10px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    }
+
+    .download-btn i {
+      transform: translateZ(5px);
+    }
+
+    .select-all-btn {
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      color: white;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .select-all-btn:hover {
+      background: rgba(139, 92, 246, 0.3);
+      transform: translateZ(5px) scale(1.05);
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+    }
+
+    .select-all-btn i {
+      transform: translateZ(5px);
+    }
+
+    .select-all-btn.selected {
+      background: rgba(139, 92, 246, 0.3);
+      border-color: rgba(139, 92, 246, 0.5);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="header p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <h1 class="text-2xl font-bold">Emotio <span>😌</span></h1>
+      <nav class="flex space-x-2">
+        <a href="/" class="nav-link">
+          <i class="fas fa-comments"></i> Chat
+        </a>
+        <a href="/journal" class="nav-link active">
+          <i class="fas fa-book"></i> Journal
+        </a>
+        <a href="/insights" class="nav-link">
+          <i class="fas fa-chart-line"></i> Insights
+        </a>
+        <a href="/counseling" class="nav-link">
+          <i class="fas fa-heart"></i> Counseling
+        </a>
+        <a href="/professionals" class="nav-link">
+          <i class="fas fa-user-md"></i> Professionals
+        </a>
+        <a href="/profile" class="nav-link">
+          <i class="fas fa-user"></i> Profile
+        </a>
+      </nav>
     </div>
-</div>
-{% endblock %} 
+    <a href="{{ url_for('logout') }}" class="logout-btn">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- New Entry Form -->
+      <div class="col-span-1">
+        <div class="card">
+          <h2 class="text-xl font-semibold mb-4">New Journal Entry</h2>
+          <form id="journal-form">
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">How are you feeling?</label>
+              <div class="flex gap-2 mb-4">
+                <div class="mood-option" data-mood="happy">😊</div>
+                <div class="mood-option" data-mood="calm">😌</div>
+                <div class="mood-option" data-mood="neutral">😐</div>
+                <div class="mood-option" data-mood="anxious">😰</div>
+                <div class="mood-option" data-mood="sad">😢</div>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">Your thoughts</label>
+              <textarea id="entry-content" class="w-full bg-gray-800 text-white rounded-lg p-4 h-40" placeholder="Write your thoughts here..."></textarea>
+            </div>
+            <button type="submit" class="save-entry-btn">
+              <i class="fas fa-save"></i> Save Entry
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Recent Entries -->
+      <div class="col-span-2">
+        <div class="card">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Recent Entries</h2>
+            <div class="flex gap-2">
+              <button id="select-all" class="select-all-btn">
+                <i class="fas fa-check-double"></i> Select All
+              </button>
+              <button id="delete-all" class="action-btn delete">
+                <i class="fas fa-trash"></i> Delete All
+              </button>
+            </div>
+          </div>
+          <div id="entries-container">
+            <!-- Entries will be populated here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bulk Actions -->
+  <div class="bulk-actions hidden" id="bulk-actions">
+    <button id="generate-report" class="action-btn">
+      <i class="fas fa-chart-bar"></i> Generate Report
+    </button>
+    <button id="delete-selected" class="action-btn delete">
+      <i class="fas fa-trash"></i> Delete Selected
+    </button>
+  </div>
+
+  <!-- Replace the entire modal section with this new report section -->
+  <div id="reportSection" class="hidden">
+    <div class="card mt-8">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-white">Journal Report</h2>
+        <div class="flex gap-2">
+          <button id="downloadReport" class="download-btn">
+            <i class="fas fa-download"></i> Download
+          </button>
+          <button onclick="closeReport()" class="text-gray-400 hover:text-white">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div id="reportLoading" class="hidden">
+        <div class="flex flex-col items-center justify-center py-8">
+          <div class="loading-dots mb-4">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p class="text-gray-400">Generating your report...</p>
+        </div>
+      </div>
+      
+      <div id="reportContent" class="space-y-6">
+        <!-- Report content will be inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const journalForm = document.getElementById('journal-form');
+    const entryContent = document.getElementById('entry-content');
+    const entriesContainer = document.getElementById('entries-container');
+    const moodOptions = document.querySelectorAll('.mood-option');
+    const bulkActions = document.getElementById('bulk-actions');
+    const reportSection = document.getElementById('reportSection');
+    const selectAllBtn = document.getElementById('select-all');
+    const deleteAllBtn = document.getElementById('delete-all');
+    const generateReportBtn = document.getElementById('generate-report');
+    const deleteSelectedBtn = document.getElementById('delete-selected');
+    let selectedMood = null;
+    let selectedEntries = new Set();
+
+    // Mood selection
+    moodOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        moodOptions.forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+        selectedMood = option.dataset.mood;
+      });
+    });
+
+    // Load entries on page load
+    loadEntries();
+
+    // Form submission
+    journalForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const content = entryContent.value.trim();
+      if (!content || !selectedMood) {
+        alert('Please select a mood and write your thoughts');
+        return;
+      }
+
+      try {
+        const response = await fetch('/journal', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: content,
+            mood: selectedMood
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save entry');
+        }
+
+        const data = await response.json();
+        if (data.status === 'success') {
+          entryContent.value = '';
+          moodOptions.forEach(opt => opt.classList.remove('selected'));
+          selectedMood = null;
+          loadEntries();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to save entry. Please try again.');
+      }
+    });
+
+    // Load entries
+    async function loadEntries() {
+      try {
+        const response = await fetch('/journal-entries');
+        if (!response.ok) {
+          throw new Error('Failed to load entries');
+        }
+
+        const entries = await response.json();
+        entriesContainer.innerHTML = '';
+
+        if (entries.length === 0) {
+          entriesContainer.innerHTML = '<p class="text-gray-400">No entries yet. Start writing!</p>';
+          return;
+        }
+
+        entries.forEach(entry => {
+          const entryDiv = document.createElement('div');
+          entryDiv.className = 'entry';
+          entryDiv.dataset.id = entry._id;
+          entryDiv.innerHTML = `
+            <div class="flex justify-between items-start">
+              <div class="entry-date">${new Date(entry.timestamp).toLocaleString()}</div>
+              <div class="entry-actions flex gap-2">
+                <button class="edit-entry text-violet-400 hover:text-violet-300">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="delete-entry text-red-400 hover:text-red-300">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="entry-mood mb-2">${getMoodEmoji(entry.mood)}</div>
+            <div class="entry-content">${entry.content}</div>
+          `;
+          entriesContainer.appendChild(entryDiv);
+
+          // Add click handlers for entry actions
+          const editBtn = entryDiv.querySelector('.edit-entry');
+          const deleteBtn = entryDiv.querySelector('.delete-entry');
+
+          editBtn.addEventListener('click', () => editEntry(entry));
+          deleteBtn.addEventListener('click', () => deleteEntry(entry._id));
+          entryDiv.addEventListener('click', (e) => {
+            if (!e.target.closest('.entry-actions')) {
+              toggleSelectEntry(entryDiv, entry._id);
+            }
+          });
+        });
+      } catch (error) {
+        console.error('Error:', error);
+        entriesContainer.innerHTML = '<p class="text-red-400">Failed to load entries. Please try again.</p>';
+      }
+    }
+
+    function getMoodEmoji(mood) {
+      const emojis = {
+        happy: '😊',
+        calm: '😌',
+        neutral: '😐',
+        anxious: '😰',
+        sad: '😢'
+      };
+      return emojis[mood] || '😐';
+    }
+
+    // Entry selection
+    function toggleSelectEntry(entryDiv, entryId) {
+      entryDiv.classList.toggle('selected');
+      if (entryDiv.classList.contains('selected')) {
+        selectedEntries.add(entryId);
+      } else {
+        selectedEntries.delete(entryId);
+      }
+      updateBulkActions();
+    }
+
+    function updateBulkActions() {
+      if (selectedEntries.size > 0) {
+        bulkActions.classList.remove('hidden');
+      } else {
+        bulkActions.classList.add('hidden');
+      }
+    }
+
+    // Select all entries
+    selectAllBtn.addEventListener('click', () => {
+      const entries = document.querySelectorAll('.entry');
+      const isSelectingAll = !selectAllBtn.classList.contains('selected');
+      
+      entries.forEach(entry => {
+        const entryId = entry.dataset.id;
+        if (isSelectingAll) {
+          entry.classList.add('selected');
+          selectedEntries.add(entryId);
+        } else {
+          entry.classList.remove('selected');
+          selectedEntries.delete(entryId);
+        }
+      });
+
+      selectAllBtn.classList.toggle('selected');
+      selectAllBtn.innerHTML = isSelectingAll 
+        ? '<i class="fas fa-times"></i> Deselect All'
+        : '<i class="fas fa-check-double"></i> Select All';
+      
+      updateBulkActions();
+    });
+
+    // Delete all entries
+    deleteAllBtn.addEventListener('click', async () => {
+      if (confirm('Are you sure you want to delete all entries? This cannot be undone.')) {
+        try {
+          const response = await fetch('/delete-all-entries', {
+            method: 'POST'
+          });
+          if (response.ok) {
+            loadEntries();
+            selectedEntries.clear();
+            updateBulkActions();
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to delete entries. Please try again.');
+        }
+      }
+    });
+
+    // Delete selected entries
+    deleteSelectedBtn.addEventListener('click', async () => {
+      if (selectedEntries.size === 0) return;
+      if (confirm(`Are you sure you want to delete ${selectedEntries.size} selected entries?`)) {
+        try {
+          const response = await fetch('/delete-entries', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              entry_ids: Array.from(selectedEntries)
+            })
+          });
+          if (response.ok) {
+            loadEntries();
+            selectedEntries.clear();
+            updateBulkActions();
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to delete entries. Please try again.');
+        }
+      }
+    });
+
+    // Generate report
+    generateReportBtn.addEventListener('click', generateReport);
+
+    function generateReport() {
+      const selectedEntryIds = Array.from(selectedEntries);
+      
+      if (selectedEntryIds.length === 0) {
+        alert('Please select at least one entry to generate a report');
+        return;
+      }
+
+      const reportSection = document.getElementById('reportSection');
+      const loading = document.getElementById('reportLoading');
+      const content = document.getElementById('reportContent');
+      
+      reportSection.classList.remove('hidden');
+      loading.classList.remove('hidden');
+      content.innerHTML = '';
+
+      fetch('/generate-report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ entry_ids: selectedEntryIds })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          const formattedContent = formatReportContent(data);
+          content.innerHTML = formattedContent;
+        } else {
+          content.innerHTML = `<p class="text-red-500">Error: ${data.message}</p>`;
+        }
+      })
+      .catch(error => {
+        content.innerHTML = `<p class="text-red-500">Error generating report: ${error.message}</p>`;
+      })
+      .finally(() => {
+        loading.classList.add('hidden');
+      });
+    }
+
+    function formatReportContent(data) {
+      // Clean up the content by removing markdown symbols and extra spaces
+      const cleanContent = data.emotional_analysis
+        .replace(/[#*]/g, '')
+        .replace(/\n\s*\n/g, '\n')
+        .trim();
+
+      // Split into sections
+      const sections = cleanContent.split(/\d+\./).filter(section => section.trim());
+      
+      let html = '';
+      sections.forEach((section, index) => {
+        const lines = section.trim().split('\n');
+        const title = lines[0].trim();
+        const content = lines.slice(1).join('\n');
+        
+        html += `
+          <div class="report-section">
+            <h3>${index + 1}. ${title}</h3>
+            <div class="space-y-4">
+              ${content.split('\n').map(line => {
+                if (line.trim().startsWith('•')) {
+                  return `<ul class="list-disc list-inside">
+                    <li class="text-gray-300">${line.replace(/[•]/, '').trim()}</li>
+                  </ul>`;
+                } else {
+                  return `<p class="text-gray-300">${line.trim()}</p>`;
+                }
+              }).join('')}
+            </div>
+          </div>
+        `;
+      });
+      
+      return html;
+    }
+
+    function closeReport() {
+      document.getElementById('reportSection').classList.add('hidden');
+    }
+
+    // Download report functionality
+    document.getElementById('downloadReport').addEventListener('click', function() {
+      const content = document.getElementById('reportContent').innerText;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `journal_report_${new Date().toISOString().split('T')[0]}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
+
+    // Edit entry
+    async function editEntry(entry) {
+      entryContent.value = entry.content;
+      moodOptions.forEach(opt => {
+        if (opt.dataset.mood === entry.mood) {
+          opt.classList.add('selected');
+          selectedMood = entry.mood;
+        } else {
+          opt.classList.remove('selected');
+        }
+      });
+      
+      // Update form submission to handle edit
+      const originalSubmit = journalForm.onsubmit;
+      journalForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const content = entryContent.value.trim();
+        if (!content || !selectedMood) {
+          alert('Please select a mood and write your thoughts');
+          return;
+        }
+
+        try {
+          const response = await fetch(`/edit-entry/${entry._id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              content: content,
+              mood: selectedMood
+            })
+          });
+
+          if (response.ok) {
+            entryContent.value = '';
+            moodOptions.forEach(opt => opt.classList.remove('selected'));
+            selectedMood = null;
+            loadEntries();
+            journalForm.onsubmit = originalSubmit;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to update entry. Please try again.');
+        }
+      };
+    }
+
+    // Delete entry
+    async function deleteEntry(entryId) {
+      if (confirm('Are you sure you want to delete this entry?')) {
+        try {
+          const response = await fetch(`/delete-entry/${entryId}`, {
+            method: 'POST'
+          });
+          if (response.ok) {
+            loadEntries();
+            selectedEntries.delete(entryId);
+            updateBulkActions();
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to delete entry. Please try again.');
+        }
+      }
+    }
+  </script>
+</body>
+</html> 

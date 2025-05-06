@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emotio 😌 - Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      perspective: 1000px;
+    }
+
+    .header {
+      background: rgba(26, 26, 46, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    .header h1 {
+      background: linear-gradient(45deg, #8B5CF6, #EC4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transform: translateZ(15px);
+      text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 2rem;
+    }
+
+    .header h1 span {
+      font-size: 2rem;
+      animation: wave 2s infinite;
+      display: inline-block;
+      transform-origin: 70% 70%;
+      -webkit-text-fill-color: initial;
+      background: none;
+      text-shadow: none;
+    }
+
+    .profile-card {
+      background: rgba(26, 26, 46, 0.6);
+      box-shadow: 0px 8px 28px -9px rgba(0,0,0,0.45);
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      height: 400px;
+      border-radius: 16px;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .profile-card:hover {
+      transform: translateZ(20px) rotateX(5deg) rotateY(5deg);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .wave {
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      opacity: 0.6;
+      left: 0;
+      top: 0;
+      margin-left: -50%;
+      margin-top: -70%;
+      background: linear-gradient(744deg,#af40ff,#5b42f3 60%,#00ddeb);
+      border-radius: 40%;
+      animation: wave 55s infinite linear;
+    }
+
+    .wave:nth-child(2) {
+      top: 210px;
+      animation-duration: 50s;
+    }
+
+    .wave:nth-child(3) {
+      top: 210px;
+      animation-duration: 45s;
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-20deg); }
+      75% { transform: rotate(20deg); }
+    }
+
+    .stats-card {
+      background: rgba(26, 26, 46, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform-style: preserve-3d;
+      transition: all 0.3s ease;
+    }
+
+    .stats-card:hover {
+      transform: translateZ(10px);
+      box-shadow: 0 8px 30px rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .nav-link {
+      color: #fff;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+    }
+
+    .nav-link:hover {
+      opacity: 1;
+      background: rgba(139, 92, 246, 0.2);
+      transform: translateZ(10px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    }
+
+    .nav-link.active {
+      opacity: 1;
+      background: rgba(139, 92, 246, 0.3);
+      transform: translateZ(20px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+      border-color: rgba(139, 92, 246, 0.5);
+    }
+
+    .nav-link i {
+      margin-right: 0.5rem;
+      font-size: 1.1rem;
+      transform: translateZ(5px);
+    }
+
+    .logout-btn {
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      color: white;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+    }
+
+    .logout-btn:hover {
+      background: rgba(139, 92, 246, 0.3);
+      transform: translateZ(10px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    }
+
+    .logout-btn i {
+      margin-right: 0.5rem;
+      transform: translateZ(5px);
+    }
+
+    .edit-name {
+      display: none;
+    }
+
+    .name-container:hover .edit-name {
+      display: inline-block;
+    }
+
+    .achievement-card {
+      background: rgba(26, 26, 46, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .achievement-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .achievement-unlocked {
+      background-color: rgba(139, 92, 246, 0.2);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="header p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <h1 class="text-2xl font-bold">Emotio <span>😌</span></h1>
+      <nav class="flex space-x-2">
+        <a href="/" class="nav-link">
+          <i class="fas fa-comments"></i> Chat
+        </a>
+        <a href="/journal" class="nav-link">
+          <i class="fas fa-book"></i> Journal
+        </a>
+        <a href="/insights" class="nav-link">
+          <i class="fas fa-chart-line"></i> Insights
+        </a>
+        <a href="/counseling" class="nav-link">
+          <i class="fas fa-heart"></i> Counseling
+        </a>
+        <a href="/professionals" class="nav-link">
+          <i class="fas fa-user-md"></i> Professionals
+        </a>
+        <a href="/profile" class="nav-link active">
+          <i class="fas fa-user"></i> Profile
+        </a>
+      </nav>
+    </div>
+    <a href="{{ url_for('logout') }}" class="logout-btn">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+      <!-- Profile Card -->
+      <div class="profile-card mx-auto mb-8">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        
+        <div class="relative p-8 text-center">
+          <div class="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-5xl font-bold text-white transform hover:scale-110 transition-transform">
+            {{ user_data.name[0].upper() if user_data.name else user_data.email[0].upper() }}
+          </div>
+          <div class="name-container relative inline-block">
+            <h2 class="text-3xl font-bold mb-2 inline-block">{{ user_data.name if user_data.name else "Set Your Name" }}</h2>
+            <button class="edit-name ml-2 text-purple-400 hover:text-purple-300" onclick="toggleNameEdit()">
+              <i class="fas fa-edit"></i>
+            </button>
+            <div id="name-edit-form" class="hidden mt-2">
+              <input type="text" id="new-name" class="bg-gray-800 text-white rounded-lg p-2" value="{{ user_data.name if user_data.name else '' }}" placeholder="Enter your name">
+              <button onclick="saveName()" class="ml-2 bg-purple-500 text-white px-3 py-1 rounded-lg hover:bg-purple-600">Save</button>
+            </div>
+          </div>
+          <p class="text-gray-400 text-lg">{{ user_data.email }}</p>
+          <p class="text-gray-400 text-sm mt-1">Member since {{ user_data.created_at.strftime('%Y-%m-%d') }}</p>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="stats-card p-6 rounded-lg">
+          <div class="text-4xl font-bold mb-2">{{ user_data.stats.streak }}</div>
+          <div class="text-gray-400">Day Streak</div>
+        </div>
+        <div class="stats-card p-6 rounded-lg">
+          <div class="text-4xl font-bold mb-2">{{ user_data.stats.total_entries }}</div>
+          <div class="text-gray-400">Journal Entries</div>
+        </div>
+        <div class="stats-card p-6 rounded-lg">
+          <div class="text-4xl font-bold mb-2">{{ user_data.stats.total_moods }}</div>
+          <div class="text-gray-400">Mood Checks</div>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="mb-8">
+        <h3 class="text-2xl font-bold mb-4">Your Achievements</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="achievement-card {% if user_data.stats.streak >= 7 %}achievement-unlocked{% endif %}">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center">
+                <i class="fas fa-fire text-xl"></i>
+              </div>
+              <div>
+                <h4 class="font-semibold">7-Day Streak</h4>
+                <p class="text-gray-400 text-sm">
+                  {% if user_data.stats.streak >= 7 %}
+                    Achievement Unlocked! 🎉
+                  {% else %}
+                    {{ 7 - user_data.stats.streak }} more days to go!
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="achievement-card {% if user_data.stats.total_entries >= 10 %}achievement-unlocked{% endif %}">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center">
+                <i class="fas fa-book text-xl"></i>
+              </div>
+              <div>
+                <h4 class="font-semibold">Journal Master</h4>
+                <p class="text-gray-400 text-sm">
+                  {% if user_data.stats.total_entries >= 10 %}
+                    Achievement Unlocked! 🎉
+                  {% else %}
+                    {{ 10 - user_data.stats.total_entries }} more entries to go!
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div>
+        <h3 class="text-2xl font-bold mb-4">Recent Activity</h3>
+        <div class="space-y-4">
+          <div class="stats-card p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <i class="fas fa-book text-purple-500"></i>
+                <span>Last Journal Entry</span>
+              </div>
+              <span class="text-gray-400">2 days ago</span>
+            </div>
+          </div>
+          <div class="stats-card p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <i class="fas fa-chart-line text-purple-500"></i>
+                <span>Last Mood Check</span>
+              </div>
+              <span class="text-gray-400">
+                {% if user_data.stats.last_mood_check %}
+                  {{ user_data.stats.last_mood_check.strftime('%Y-%m-%d %H:%M') }}
+                {% else %}
+                  Never
+                {% endif %}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function toggleNameEdit() {
+      const form = document.getElementById('name-edit-form');
+      form.classList.toggle('hidden');
+    }
+
+    async function saveName() {
+      const newName = document.getElementById('new-name').value;
+      try {
+        const response = await fetch('/profile/update-name', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: newName })
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          throw new Error('Failed to update name');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to update name. Please try again.');
+      }
+    }
+
+    function toggleStreakEdit() {
+      const form = document.getElementById('streak-edit-form');
+      form.classList.toggle('hidden');
+    }
+
+    async function updateStreak() {
+      const newStreak = document.getElementById('new-streak').value;
+      try {
+        const response = await fetch('/update-streak', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ streak: parseInt(newStreak) })
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          throw new Error('Failed to update streak');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to update streak. Please try again.');
+      }
+    }
+  </script>
+</body>
+</html> 
