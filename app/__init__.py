@@ -9,7 +9,9 @@ import os
 load_dotenv()
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask(__name__,
+           template_folder='templates',
+           static_folder='static')
 app.secret_key = os.getenv('SECRET_KEY')
 CORS(app)
 
@@ -23,9 +25,10 @@ login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 
 # Import routes
-from app.routes import auth, chat, counseling, journal, insights, professionals
+from app.routes import auth, chat, counseling, journal, insights, professionals, main
 
 # Register blueprints
+app.register_blueprint(main.bp)
 app.register_blueprint(auth.bp)
 app.register_blueprint(chat.bp)
 app.register_blueprint(counseling.bp)
