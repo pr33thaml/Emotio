@@ -96,8 +96,7 @@ def detect_mood(text):
         return "neutral"
 
 @app.route('/')
-@login_required
-def home():
+def index():
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
