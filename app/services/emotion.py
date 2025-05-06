@@ -7,58 +7,69 @@ class EmotionService:
     def __init__(self):
         pass
 
+    def analyze_emotion(self, text):
+        # Use TextBlob for basic sentiment analysis
+        analysis = TextBlob(text)
+        
+        # Get polarity (-1 to 1) and subjectivity (0 to 1)
+        polarity = analysis.sentiment.polarity
+        subjectivity = analysis.sentiment.subjectivity
+        
+        # Determine emotion based on polarity and subjectivity
+        if polarity > 0.3:
+            return 'happy'
+        elif polarity < -0.3:
+            return 'sad'
+        elif subjectivity > 0.5:
+            return 'anxious'
+        else:
+            return 'neutral'
+
     def detect_mood(self, text):
-        blob = TextBlob(text)
-        polarity = blob.sentiment.polarity
-        if polarity > 0.5:
-            return "happy"
-        elif polarity < -0.3:
-            return "sad"
-        else:
-            return "neutral"
+        return self.analyze_emotion(text)
 
-    def analyze_emotion(self, message):
-        if not message:
-            return {'emotion': 'neutral'}
+    def calculate_emotional_score(self, messages):
+        if not messages:
+            return 0
         
-        blob = TextBlob(message)
-        polarity = blob.sentiment.polarity
+        total_score = 0
+        for message in messages:
+            emotion = self.analyze_emotion(message.get('message', ''))
+            if emotion == 'happy':
+                total_score += 1
+            elif emotion == 'sad':
+                total_score -= 1
+            elif emotion == 'anxious':
+                total_score -= 0.5
         
-        if polarity > 0.5:
-            emotion = 'happy'
-        elif polarity > 0.2:
-            emotion = 'calm'
-        elif polarity < -0.3:
-            emotion = 'sad'
-        elif polarity < -0.1:
-            emotion = 'anxious'
-        else:
-            emotion = 'neutral'
-            
-        return {'emotion': emotion}
+        return total_score / len(messages)
 
-    def calculate_emotional_score(self, mood_history):
-        if not mood_history:
-            return 50  # Default score
-        
-        mood_scores = {'happy': 5, 'calm': 4, 'neutral': 3, 'anxious': 2, 'sad': 1}
-        recent_moods = [mood_scores.get(m['mood'], 3) for m in mood_history[-7:]]
-        mood_std = np.std(recent_moods) if len(recent_moods) > 1 else 0
-        
-        # Lower standard deviation indicates more emotional stability
-        stability_score = max(0, 100 - (mood_std * 20))
-        return int(stability_score)
-
-    def get_avg_mood_emoji(self, mood_history):
-        if not mood_history:
+    def get_avg_mood_emoji(self, messages):
+        if not messages:
             return '😐'
         
-        mood_scores = {'happy': 5, 'calm': 4, 'neutral': 3, 'anxious': 2, 'sad': 1}
-        recent_moods = [mood_scores.get(m['mood'], 3) for m in mood_history[-7:]]
-        avg_mood = np.mean(recent_moods) if recent_moods else 3
+        happy_count = 0
+        sad_count = 0
+        anxious_count = 0
         
-        emojis = {5: '😄', 4: '😊', 3: '😐', 2: '😰', 1: '😢'}
-        return emojis.get(round(avg_mood), '😐')
+        for message in messages:
+            emotion = self.analyze_emotion(message.get('message', ''))
+            if emotion == 'happy':
+                happy_count += 1
+            elif emotion == 'sad':
+                sad_count += 1
+            elif emotion == 'anxious':
+                anxious_count += 1
+        
+        total = len(messages)
+        if happy_count / total > 0.5:
+            return '😊'
+        elif sad_count / total > 0.5:
+            return '😢'
+        elif anxious_count / total > 0.5:
+            return '😰'
+        else:
+            return '😐'
 
     def analyze_journal_sentiment(self, journal_entries):
         if not journal_entries:
