@@ -1,16 +1,11 @@
 from textblob import TextBlob
-from transformers import pipeline
 import numpy as np
 from collections import Counter
 from datetime import datetime, timedelta
 
 class EmotionService:
     def __init__(self):
-        self.emotion_classifier = pipeline(
-            "text-classification", 
-            model="j-hartmann/emotion-english-distilroberta-base",
-            return_all_scores=False
-        )
+        pass
 
     def detect_mood(self, text):
         blob = TextBlob(text)
@@ -26,8 +21,21 @@ class EmotionService:
         if not message:
             return {'emotion': 'neutral'}
         
-        result = self.emotion_classifier(message)[0]
-        return {'emotion': result['label'].lower()}
+        blob = TextBlob(message)
+        polarity = blob.sentiment.polarity
+        
+        if polarity > 0.5:
+            emotion = 'happy'
+        elif polarity > 0.2:
+            emotion = 'calm'
+        elif polarity < -0.3:
+            emotion = 'sad'
+        elif polarity < -0.1:
+            emotion = 'anxious'
+        else:
+            emotion = 'neutral'
+            
+        return {'emotion': emotion}
 
     def calculate_emotional_score(self, mood_history):
         if not mood_history:
