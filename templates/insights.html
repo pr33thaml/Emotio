@@ -168,10 +168,6 @@
       transform: translateZ(0);
       transition: all 0.3s ease;
       backdrop-filter: blur(5px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
     }
 
     .insight-card:hover {
@@ -185,7 +181,6 @@
       font-size: 1.1rem;
       margin-bottom: 1rem;
       transform: translateZ(5px);
-      width: 100%;
     }
 
     .insight-value {
@@ -194,15 +189,12 @@
       color: #fff;
       margin-bottom: 0.5rem;
       transform: translateZ(5px);
-      width: 100%;
     }
 
     .insight-label {
       color: #9CA3AF;
       font-size: 0.9rem;
       transform: translateZ(5px);
-      width: 100%;
-      margin-bottom: 0.5rem;
     }
 
     .trend-indicator {
@@ -212,8 +204,6 @@
       margin-top: 0.5rem;
       font-size: 0.9rem;
       transform: translateZ(5px);
-      width: 100%;
-      justify-content: center;
     }
 
     .trend-up {
@@ -432,18 +422,18 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="insight-card">
               <h3>Best Time of Day</h3>
-              <div class="insight-value" id="best-time">Loading...</div>
-              <div class="insight-label">Based on your mood history</div>
+              <div class="insight-value">Morning</div>
+              <div class="insight-label">Your mood tends to be highest during this time</div>
             </div>
             <div class="insight-card">
               <h3>Mood Triggers</h3>
-              <div class="insight-value" id="mood-triggers">Loading...</div>
-              <div class="insight-label">Common patterns in your mood changes</div>
+              <div class="insight-value">Social Activities</div>
+              <div class="insight-label">Most positive moods occur after social interactions</div>
             </div>
             <div class="insight-card">
               <h3>Weekly Pattern</h3>
-              <div class="insight-value" id="weekly-pattern">Loading...</div>
-              <div class="insight-label">Your mood trends throughout the week</div>
+              <div class="insight-value">Weekends</div>
+              <div class="insight-label">Your mood improves significantly on weekends</div>
             </div>
           </div>
         </div>
@@ -468,9 +458,6 @@
               <canvas id="timeOfDayChart"></canvas>
             </div>
           </div>
-          <div class="mt-4 text-sm text-gray-400" id="mood-insights">
-            Loading mood insights...
-          </div>
         </div>
       </div>
 
@@ -485,9 +472,9 @@
               <div class="progress-bar">
                 <div id="physical-progress" class="progress-fill" style="width: 0%"></div>
               </div>
-              <div class="trend-indicator" id="physical-trend">
+              <div class="trend-indicator">
                 <i class="fas fa-arrow-up trend-up"></i>
-                <span>Loading...</span>
+                <span>5% from last week</span>
               </div>
             </div>
             <div class="insight-card">
@@ -496,9 +483,9 @@
               <div class="progress-bar">
                 <div id="mental-progress" class="progress-fill" style="width: 0%"></div>
               </div>
-              <div class="trend-indicator" id="mental-trend">
+              <div class="trend-indicator">
                 <i class="fas fa-arrow-up trend-up"></i>
-                <span>Loading...</span>
+                <span>3% from last week</span>
               </div>
             </div>
             <div class="insight-card">
@@ -507,9 +494,9 @@
               <div class="progress-bar">
                 <div id="emotional-progress" class="progress-fill" style="width: 0%"></div>
               </div>
-              <div class="trend-indicator" id="emotional-trend">
-                <i class="fas fa-arrow-up trend-up"></i>
-                <span>Loading...</span>
+              <div class="trend-indicator">
+                <i class="fas fa-arrow-down trend-down"></i>
+                <span>2% from last week</span>
               </div>
             </div>
           </div>
@@ -521,15 +508,11 @@
         <div class="card">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="text-center">
-              <div class="insight-card">
-                <h3>Current Streak</h3>
-                <div class="insight-value" id="streak-count">0</div>
-                <div class="insight-label">Keep going!</div>
-                <div class="trend-indicator">
-                  <i class="fas fa-fire text-orange-400"></i>
-                  <span>Active streak</span>
-                </div>
+              <div class="streak-badge mb-2">
+                <i class="fas fa-fire text-orange-400"></i>
+                <span id="streak-count">0</span> Day Streak
               </div>
+              <p class="text-sm text-gray-300">Keep going!</p>
             </div>
             <div class="text-center">
               <div class="insight-card">
@@ -573,12 +556,6 @@
         updateMoodChart(data.moodData, data.moodLabels);
         updateTimeOfDayChart(data.timeData);
         
-        // Update personal insights
-        document.getElementById('best-time').textContent = data.bestTime || 'Not enough data';
-        document.getElementById('mood-triggers').textContent = data.moodTriggers || 'Not enough data';
-        document.getElementById('weekly-pattern').textContent = data.weeklyPattern || 'Not enough data';
-        document.getElementById('mood-insights').textContent = data.moodInsights || 'Not enough data';
-        
         // Update wellness scores
         document.getElementById('physical-score').textContent = `${data.physicalScore}%`;
         document.getElementById('mental-score').textContent = `${data.mentalScore}%`;
@@ -587,11 +564,6 @@
         document.getElementById('physical-progress').style.width = `${data.physicalScore}%`;
         document.getElementById('mental-progress').style.width = `${data.mentalScore}%`;
         document.getElementById('emotional-progress').style.width = `${data.emotionalScore}%`;
-        
-        // Update trends
-        updateTrendIndicator('physical-trend', data.physicalTrend);
-        updateTrendIndicator('mental-trend', data.mentalTrend);
-        updateTrendIndicator('emotional-trend', data.emotionalTrend);
         
         // Update stats
         document.getElementById('streak-count').textContent = data.streak;
@@ -684,25 +656,6 @@
           }
         }
       });
-    }
-
-    function updateTrendIndicator(elementId, trend) {
-      const element = document.getElementById(elementId);
-      if (!element) return;
-      
-      const icon = element.querySelector('i');
-      const text = element.querySelector('span');
-      
-      if (trend > 0) {
-        icon.className = 'fas fa-arrow-up trend-up';
-        text.textContent = `${Math.abs(trend)}% from last period`;
-      } else if (trend < 0) {
-        icon.className = 'fas fa-arrow-down trend-down';
-        text.textContent = `${Math.abs(trend)}% from last period`;
-      } else {
-        icon.className = 'fas fa-minus';
-        text.textContent = 'No change from last period';
-      }
     }
 
     // Handle time period buttons
